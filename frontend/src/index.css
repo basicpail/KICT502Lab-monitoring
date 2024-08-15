@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.btn {
+  @apply bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.top-4 { top: 1rem; }
+.top-8 { top: 2rem; }
+.top-12 { top: 3rem; }
+.top-16 { top: 4rem; }
+.top-20 { top: 5rem; }
+.top-24 { top: 6rem; }
+.top-28 { top: 7rem; }
+.top-32 { top: 8rem; }
+.top-36 { top: 9rem; }
+.top-40 { top: 10rem; }
+.top-44 { top: 11rem; }
+.top-48 { top: 12rem; }
+.top-52 { top: 13rem; }
+.top-56 { top: 14rem; }
+.top-60 { top: 15rem; }
+.top-64 { top: 16rem; }
+.top-68 { top: 17rem; }
+.top-72 { top: 18rem; }
+.top-76 { top: 19rem; }
+.top-80 { top: 20rem; }
+.top-100 { top: 25rem; }
+.top-104 { top: 26rem; }
+
+.left-4 { left: 1rem; }
+.left-8 { left: 2rem; }
+.left-12 { left: 3rem; }
+.left-16 { left: 4rem; }
+.left-20 { left: 5rem; }
+.left-24 { left: 6rem; }
+.left-28 { left: 7rem; }
+.left-32 { left: 8rem; }
+.left-36 { left: 9rem; }
+.left-40 { left: 10rem; }
+.left-44 { left: 11rem; }
+.left-48 { left: 12rem; }
+.left-52 { left: 13rem; }
+.left-56 { left: 14rem; }
+.left-60 { left: 15rem; }
+.left-64 { left: 16rem; }
+.left-68 { left: 17rem; }
+.left-72 { left: 18rem; }
+.left-76 { left: 19rem; }
+.left-80 { left: 20rem; }
+.left-84 { left: 21rem; }
+.left-88 { left: 22rem; }
+.left-92 { left: 23rem; }
+.left-96 { left: 24rem; }
+.left-100 { left: 25rem; }
+.left-104 { left: 26rem; }
+.left-108 { left: 27rem; }
+.left-112 { left: 28rem; }
+.left-116 { left: 29rem; }
+.left-120 { left: 30rem; }
+.left-124 { left: 31rem; }
+.left-128 { left: 32rem; }
+.left-132 { left: 33rem; }
+.left-136 { left: 34rem; }
+.left-140 { left: 35rem; }
+.left-144 { left: 36rem; }
+.left-148 { left: 37rem; }
+.left-152 { left: 38rem; }
+.left-156 { left: 39rem; }
+.left-160 { left: 40rem; }
+.left-164 { left: 41rem; }
+.left-168 { left: 42rem; }
+.left-172 { left: 43rem; }
+.left-176 { left: 44rem; }
+.left-180 { left: 45rem; }
+.left-184 { left: 46rem; }
+.left-188 { left: 47rem; }
+
+
+/* styles.css */
+
+.table-container {
+  background-color: #323942; /* bg-gray-800 */
+  padding: 1.5rem; /* p-6 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+}
+
+.table-header {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: bold; /* font-bold */
+  margin-bottom: 1rem; /* mb-4 */
+  border-bottom: 1px solid #4b5563; /* border-b border-gray-600 */
+  padding-bottom: 0.5rem; /* pb-2 */
+}
+
+.table {
+  width: 100%; /* w-full */
+  text-align: center; /* text-center */
+  border-collapse: collapse; /* collapse borders for better styling */
+}
+
+.table th, .table td {
+  padding: 0.5rem; /* py-2 */
+  border-bottom: 1px solid #4b5563; /* border-b border-gray-600 */
+}
+
+
+
+
+
+/*
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+*/
