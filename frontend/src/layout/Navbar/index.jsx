@@ -18,7 +18,7 @@ const Navbar = () => {
 
           {/*logo */}
           <div className='flex items-center text-2xl h-14'>
-            <Link to='/dashboard'><img src='http://localhost:4000/Navbar-logo.png' alt="Logo" className="h-12 w-14 mr-2"/></Link>
+            <Link to='/'><img src='http://localhost:4000/Navbar-logo.png' alt="Logo" className="h-12 w-14 mr-2"/></Link>
           </div>
 
 

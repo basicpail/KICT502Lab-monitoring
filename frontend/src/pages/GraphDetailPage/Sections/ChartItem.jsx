@@ -8,25 +8,24 @@ import {
     Title,
     Tooltip,
   } from 'chart.js';
-  import { RealTimeScale, StreamingPlugin } from 'chartjs-plugin-streaming';
-  import React, { useEffect, useMemo, useRef, useState } from 'react';
-  import { Line } from 'react-chartjs-2';
-  import 'chartjs-adapter-luxon';
-  import { useSelector, shallowEqual} from 'react-redux';
-  
-  Chart.register(
-    StreamingPlugin,
-    RealTimeScale,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  );
+import { RealTimeScale, StreamingPlugin } from 'chartjs-plugin-streaming';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import 'chartjs-adapter-luxon';
+import { useSelector, shallowEqual} from 'react-redux';
 
-  import dataList from '../const';
+Chart.register(
+  StreamingPlugin,
+  RealTimeScale,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+import dataList from '../../../utils/const';
   
   const ChartItem = ({ graphDataList, duration }) => {
     //const chartRef = useRef(null);

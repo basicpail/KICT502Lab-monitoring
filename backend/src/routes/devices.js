@@ -9,9 +9,11 @@ const auth = require('../middleware/auth');
 const { connectModbus, readModbus, writeModbus, performModbusActions } = require('../utils/modbusUtils');
 //const { default: axiosInstance } = require('../../../frontend/src/utils/axios');
 const Device = require('../models/Device');
+const { downsampling } = require('../utils/formatting');
 
 
-const mqttClient = mqtt.connect('mqtt://119.30.150.230:1883'); // MQTT 브로커 주소 설정
+// const mqttClient = mqtt.connect('mqtt://119.30.150.230:1883'); // MQTT 브로커 주소 설정
+const mqttClient = mqtt.connect('mqtt://kict502lab.duckdns.org:1883'); // MQTT 브로커 주소 설정
 
 mqttClient.on('connect', () => {
     console.log('Connected to MQTT broker');
@@ -46,61 +48,8 @@ router.post('/writeModbus', async (req, res, next) => {
 });
 
 
-router.post('/control' , async (req, res, next) => {
-    try {
-        const data = await axios.post('http://119.30.150.230:4000/devices/control',{
-            selectedRoom: req.body.selectedRoom,
-            selectedDevice: req.body.selectedDevice,
-            selectedFunction: req.body.selectedFunction,
-            inputValue: req.body.inputValue
-        })
-        // console.log(`${req.body.selectedcategory}, ${req.body.selectedDevice}, ${req.body.selectedFunction}, ${req.body.inputValue}`);
-        // writeModbus(
-        //     req.body.selectedcategory, req.body.selectedDevice, req.body.selectedFunction, req.body.inputValue
-        // );
-    
-        return res.status(200).json({"status":200})
-
-    } catch (error) {
-        next(error);
-    }
-})
-
-router.get('/requestAllDeviceData', async (req, res, next) => {
-    try {
-        const data = await axios.get('http://119.30.150.230:4000/devices/requestAllDeviceData')
-        //const data = performModbusActions();
-        //console.log('routes_request_responseData: ', data.data);
-
-        const device = new Device(data.data);
-        await device.save();
-
-        return res.json(data.data)
-
-    } catch (error) {
-        next(error);
-    }
-})
-
-
-router.get('/requestAllDeviceDataAPI', async (req, res, next) => {
-    try {
-        const data = await axios.get('http://119.30.150.230:4000/devices/requestAllDeviceDataAPI')
-        //const data = performModbusActions();
-        //console.log('routes_request_responseData: ', data.data);
-
-        //const device = new Device(data.data);
-        //await device.save();
-
-        return res.json(data.data)
-
-    } catch (error) {
-        next(error);
-    }
-})
-
 // 데이터 조회 및 변환 함수
-router.post('/insertDeviceDataToDB', async (req, res, next) => {
+router.post('/getCSVDataFromDB', async (req, res, next) => {
     try {
         const { startDate, endDate, selectedDataList } = req.body;
         const data = await getData(startDate, endDate, selectedDataList);
@@ -109,6 +58,7 @@ router.post('/insertDeviceDataToDB', async (req, res, next) => {
             return res.status(404).json({ error: "No data found" });
         }
 
+        
         const groupedData = {};
         data.forEach(entry => {
             if (!groupedData[entry.date]) {
@@ -148,9 +98,10 @@ router.post('/insertDeviceDataToDB', async (req, res, next) => {
 router.post('/getDeviceDataFromDB', async (req, res, next) => {
     try {
         const { startDate, endDate, selectedDataList } = req.body;
-        /*console.log(`${startDate} ${endDate} ${selectedDataList}`)*/
+        // console.log(`${startDate} ${endDate} ${selectedDataList}`)
         const data = await getData(startDate, endDate, selectedDataList);
-        res.json(data);
+        const downsampledData = downsampling(data); 
+        res.json(downsampledData);
 
     } catch (error) {
         next(error);
@@ -158,57 +109,31 @@ router.post('/getDeviceDataFromDB', async (req, res, next) => {
 })
 
 async function getData(startDate, endDate, selectedDataList) {
-    const data = await Device.find({
-      createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    });
-    //console.log('getDatedata: ',data)
-  
-    const result = [];
-    data.forEach(doc => {
-        const dateStr = new Date(doc.createdAt).toISOString().slice(0, 19);
-        //const dateStr = new Date(doc.createdAt).toISOString().replace('T', ' ').slice(0, 19);
-        //const dateStr = new Date(doc.createdAt);
-        //console.log('dateStr: ', dateStr);
-        selectedDataList.forEach(selected => {
-            let [category, device, ...parameterArray] = selected.split(' ');
-            let parameter = parameterArray.join(' ');
-            //console.log('category: ', category);
-            //console.log('device: ', device);
-            //console.log('parameter: ', parameter);
-            if (category === 'Room1' || category === 'Room2') {
+    try {
+        const data = await Device.find({
+            createdAt: { $gte: startDate+':00Z', $lte: endDate+':00Z' }
+          });
+        
+        const result = [];
+        data.forEach((doc, index) => {
+            const dateStr = new Date(doc.createdAt).toISOString().slice(0, 19);
+
+            selectedDataList.forEach(selected => {
                 result.push({
                     date: dateStr,
-                    value: doc[category][device][parameter],
-                    type: `${category} ${device} ${parameter}`
-                });                
-            }
-            else {
-                if (['급기풍량', '급기온도', '급기Co2', '배기풍량', '배기온도', '배기Co2'].includes(category)){
-                    result.push({
-                        date: dateStr,
-                        value: doc['transmitter'][category],
-                        type: `${category}`
-                    }); 
-                }
-                else if (['누적전력량', '전압', '전류', '전력'].includes(category)){
-                    result.push({
-                        date: dateStr,
-                        value: doc['powermetter'][category],
-                        type: `${category}`
-                    }); 
-                }               
-            }
-            // if (doc[category] && doc[category][device] && doc[category][device][parameter] !== undefined) {
-            //     result.push({
-            //         date: dateStr,
-            //         value: doc[category][device][parameter],
-            //         type: `${category} ${device} ${parameter}`
-            //     });
-            // }
+                    value: doc[selected],
+                    type: selected
+                })
+            });
         });
-    });
-  
-    return result;
+    
+        // console.log('getData: ', result)
+            
+        return result;
+    } catch (error) {
+        console.error('getDataErr: ', error)
+    }
+    
 }
 
 module.exports = router;

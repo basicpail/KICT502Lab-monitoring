@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { saveAs } from 'file-saver';
 // import { format } from '@fast-csv/format';
 import Papa from 'papaparse';
+import deviceDataList from '../../../utils/const';
 
 Modal.setAppElement('#root');
 
@@ -16,6 +17,7 @@ const ReportModal = ({ closeModal }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectAll, setSelectAll] = useState(false); // 추가: 모두 선택 상태
   const [savePath, setSavePath] = useState(''); // New state for save path
+  const [dataList] = useState(Object.keys(deviceDataList))
 
   useEffect(() => {
     openModal();
@@ -27,7 +29,7 @@ const ReportModal = ({ closeModal }) => {
 
   const handleFetchData = async () => {
     try {
-      const response = await axiosInstance.post('/devices/insertDeviceDataToDB', {
+      const response = await axiosInstance.post('/devices/getCSVDataFromDB', {
         startDate,
         endDate,
         selectedDataList,
@@ -94,9 +96,12 @@ const ReportModal = ({ closeModal }) => {
     setSavePath(e.target.files[0].path); // Handle save path selection
   };
 
-  const dataList = ['급기풍량', '급기온도', '급기Co2', '배기풍량', '배기온도', '배기Co2', '누적전력량', '전압', '전류', '전력', 'Room1 SMD 디퓨저 목표 개도 값', 'Room1 SMD 설정 풍량', 'Room1 SMD 풍량제어 제어시간 간격', 'Room1 SMD 풍량제어 목표도달 판단기준값', 'Room1 SMD 풍량제어 디퓨저 개도 위치 조정값', 'Room1 SMD 설정온도', 'Room1 SMD 온도제어 제어시간 간격', 'Room1 SMD 현재 개도 값', 'Room1 SMD 현재풍량', 'Room1 SMD 실내온도', 'Room1 SMD 공급 대기 온도', 'Room1 SMD Co2농도', 'Room1 SMU 디퓨저 목표 개도 값', 'Room1 SMU 설정 풍량', 'Room1 SMU 풍량제어 제어시간 간격', 'Room1 SMU 풍량제어 목표도달 판단기준값', 'Room1 SMU 풍량제어 디퓨저 개도 위치 조정값', 'Room1 SMU 설정온도', 'Room1 SMU 온도제어 제어시간 간격', 'Room1 SMU 현재 개도 값', 'Room1 SMU 현재풍량', 'Room1 SMU 실내온도', 'Room1 SMU 공급 대기 온도', 'Room1 SMU Co2농도', 'Room2 SMD 디퓨저 목표 개도 값', 'Room2 SMD 설정 풍량', 'Room2 SMD 풍량제어 제어시간 간격', 'Room2 SMD 풍량제어 목표도달 판단기준값', 'Room2 SMD 풍량제어 디퓨저 개도 위치 조정값', 'Room2 SMD 설정온도', 'Room2 SMD 온도제어 제어시간 간격', 'Room2 SMD 현재 개도 값', 'Room2 SMD 현재풍량', 'Room2 SMD 실내온도', 'Room2 SMD 공급 대기 온도', 'Room2 SMD Co2농도', 'Room2 SMU 디퓨저 목표 개도 값', 'Room2 SMU 설정 풍량', 'Room2 SMU 풍량제어 제어시간 간격', 'Room2 SMU 풍량제어 목표도달 판단기준값', 'Room2 SMU 풍량제어 디퓨저 개도 위치 조정값', 'Room2 SMU 설정온도', 'Room2 SMU 온도제어 제어시간 간격', 'Room2 SMU 현재 개도 값', 'Room2 SMU 현재풍량', 'Room2 SMU 실내온도', 'Room2 SMU 공급 대기 온도', 'Room2 SMU Co2농도'];
+  //const dataList = ['급기풍량', '급기온도', '급기Co2', '배기풍량', '배기온도', '배기Co2', '누적전력량', '전압', '전류', '전력', 'Room1 SMD 디퓨저 목표 개도 값', 'Room1 SMD 설정 풍량', 'Room1 SMD 풍량제어 제어시간 간격', 'Room1 SMD 풍량제어 목표도달 판단기준값', 'Room1 SMD 풍량제어 디퓨저 개도 위치 조정값', 'Room1 SMD 설정온도', 'Room1 SMD 온도제어 제어시간 간격', 'Room1 SMD 현재 개도 값', 'Room1 SMD 현재풍량', 'Room1 SMD 실내온도', 'Room1 SMD 공급 대기 온도', 'Room1 SMD Co2농도', 'Room1 SMU 디퓨저 목표 개도 값', 'Room1 SMU 설정 풍량', 'Room1 SMU 풍량제어 제어시간 간격', 'Room1 SMU 풍량제어 목표도달 판단기준값', 'Room1 SMU 풍량제어 디퓨저 개도 위치 조정값', 'Room1 SMU 설정온도', 'Room1 SMU 온도제어 제어시간 간격', 'Room1 SMU 현재 개도 값', 'Room1 SMU 현재풍량', 'Room1 SMU 실내온도', 'Room1 SMU 공급 대기 온도', 'Room1 SMU Co2농도', 'Room2 SMD 디퓨저 목표 개도 값', 'Room2 SMD 설정 풍량', 'Room2 SMD 풍량제어 제어시간 간격', 'Room2 SMD 풍량제어 목표도달 판단기준값', 'Room2 SMD 풍량제어 디퓨저 개도 위치 조정값', 'Room2 SMD 설정온도', 'Room2 SMD 온도제어 제어시간 간격', 'Room2 SMD 현재 개도 값', 'Room2 SMD 현재풍량', 'Room2 SMD 실내온도', 'Room2 SMD 공급 대기 온도', 'Room2 SMD Co2농도', 'Room2 SMU 디퓨저 목표 개도 값', 'Room2 SMU 설정 풍량', 'Room2 SMU 풍량제어 제어시간 간격', 'Room2 SMU 풍량제어 목표도달 판단기준값', 'Room2 SMU 풍량제어 디퓨저 개도 위치 조정값', 'Room2 SMU 설정온도', 'Room2 SMU 온도제어 제어시간 간격', 'Room2 SMU 현재 개도 값', 'Room2 SMU 현재풍량', 'Room2 SMU 실내온도', 'Room2 SMU 공급 대기 온도', 'Room2 SMU Co2농도'];
   const filteredDataList = dataList.filter(data => data.toLowerCase().includes(searchTerm.toLowerCase()));
-
+  // const filteredDataList = Object.keys(dataList).filter(key =>
+  //   key.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  
   return (
     <Modal
       isOpen={modalIsOpen}
@@ -162,7 +167,6 @@ const ReportModal = ({ closeModal }) => {
               </button>
             </label>
             <div className="h-40 overflow-y-scroll border border-gray-300 rounded-md p-2">
-              
               {filteredDataList.map((data, index) => (
                 <div key={index}>
                   <label className="inline-flex items-center">
@@ -178,17 +182,6 @@ const ReportModal = ({ closeModal }) => {
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">
-              저장 경로 선택:
-            </label>
-            <input
-              type="file"
-              webkitdirectory="true" // Ensure that the user can select a directory
-              onChange={handleSavePathChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg"
-            />
           </div>
           <button 
             type="button" 

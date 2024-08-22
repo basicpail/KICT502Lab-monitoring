@@ -64,17 +64,6 @@ export const logoutUser = createAsyncThunk(
 )
 
 
-export const generateTestData = createAsyncThunk(
-    "device/generateTestData",
-    async (body, thunkAPI) => { //payload creator
-        try {
-            return body; //action payload
-        } catch (error) {
-            console.log(error);
-            return thunkAPI.rejectWithValue(error.message);
-        }
-    }
-)
 
 export const requestAllDeviceData = createAsyncThunk(
     "device/requestAllDeviceData",

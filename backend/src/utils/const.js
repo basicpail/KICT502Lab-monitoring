@@ -143,6 +143,7 @@ airmonitorDevices = [
     //18동 룸2 공기질 센서2
 ]
 
+
 module.exports = { transmitterRegisterArray,smdRegisterArray,smuRegisterArray, smdsmuRegisterDescriptions, powermeterRegisterArray,
     BASE_URL: 'https://api.smartthings.com/v1/devices',
     ST_TOKEN: '82350e11-3996-43d3-bd26-02021b40f0b3',

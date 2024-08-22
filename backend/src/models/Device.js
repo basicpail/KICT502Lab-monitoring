@@ -1,51 +1,107 @@
 const { default: mongoose } = require('mongoose');
 const { Schema } = mongoose;
 
+const AHUSchema = {
+    "운전 모드": Number,
+    "온도 설정값": Number,
+    "실내팬 설정값": Number,
+    "실외팬 설정값": Number,
+    "COMP 설정값": Number,
+    "EEV 설정값": Number,
+    "EEV 냉방 초기개도 설정값": Number,
+    "EEV 냉방 기동보류 설정값": Number,
+    "EEV 냉방 과열도 설정값": Number,
+    "EEV 냉방 제어주기 설정값": Number,
+    "EEV 냉방 P값 설정값": Number,
+    "EEV 냉방 I값 설정값": Number,
+    "EEV 난방 초기개도 설정값": Number,
+    "EEV 난방 기동보류 설정값": Number,
+    "EEV 난방 과열도 설정값": Number,
+    "EEV 난방 제어주기 설정값": Number,
+    "EEV 난방 P값 설정값": Number,
+    "EEV 난방 I값 설정값": Number,
+    "압축기 제어주기 설정값": Number,
+    "압축기 제어량 설정값": Number,
+    "댐퍼1": Number,
+    "댐퍼2": Number,
+    "댐퍼3": Number,
+    "댐퍼4": Number,
+    "댐퍼5": Number,
+    "댐퍼6": Number,
+    "댐퍼7": Number,
+    "댐퍼8": Number,
+    "댐퍼9": Number,
+    "댐퍼10": Number,
+    "댐퍼11": Number,
+    "댐퍼12": Number,
+    "실내 PM2.5값": Number,
+    "실내 CO2값": Number,
+    "토출정압": Number,
+    "실내팬 측정값": Number,
+    "실외팬 측정값": Number,
+    "압축기 설정값": Number,
+    "압축기 측정값": Number,
+    "EEV 측정값": Number,
+    "외기 온도": Number,
+    "토출 온도": Number,
+    "흡입 온도": Number,
+    "응축 온도": Number,
+    "실내 온도": Number,
+    "증발 온도": Number,
+    "직류 전압": Number,
+    "교류 전류": Number,
+    "IMP 온도": Number,
+    "압축기 에러": Number,
+    "압축기 트립": Number,
+}
 
-const diffuserSchema = new Schema({
-  "디퓨저 모드": Number,
-  "디퓨저 목표 개도 값": Number,
-  "설정 풍량": Number,
-  "풍량제어 제어시간 간격": Number,
-  "풍량제어 목표도달 판단기준값": Number,
-  "풍량제어 디퓨저 개도 위치 조정값": Number,
-  "설정온도": Number,
-  "온도제어 제어시간 간격": Number,
-  "현재 개도 값": Number,
-  "FAN RPM": Number,
-  "현재풍량": Number,
-  "실내온도": Number,
-  "공급 대기 온도": Number,
-  "Co2농도": Number
-});
+const diffuserSchema = {
+    "디퓨저 거실1 급기 설정값": Number,
+    "디퓨저 거실2 급기 설정값": Number,
+    "디퓨저 침실1 급기 설정값": Number,
+    "디퓨저 침실2 급기 설정값": Number,
+    "디퓨저 침실3 급기 설정값": Number,
+    "디퓨저 거실1 환기 설정값": Number,
+    "디퓨저 거실2 환기 설정값": Number,
+    "디퓨저 침실1 환기 설정값": Number,
+    "디퓨저 침실2 환기 설정값": Number,
+    "디퓨저 침실3 환기 설정값": Number,
+    "디퓨저 거실1 급기 현재값": Number,
+    "디퓨저 거실2 급기 현재값": Number,
+    "디퓨저 침실1 급기 현재값": Number,
+    "디퓨저 침실2 급기 현재값": Number,
+    "디퓨저 침실3 급기 현재값": Number,
+    "디퓨저 거실1 환기 현재값": Number,
+    "디퓨저 거실2 환기 현재값": Number,
+    "디퓨저 침실1 환기 현재값": Number,
+    "디퓨저 침실2 환기 현재값": Number,
+    "디퓨저 침실3 환기 현재값": Number,
+}
 
-const roomSchema = new Schema({
-  SMD: diffuserSchema,
-  SMU: diffuserSchema
-});
+const airVolumeMeterSchema = {
+    "공조기 급기 풍량": Number,
+    "공조기 환기 풍량": Number,
+    "거실1 급기 풍량": Number,
+    "거실1 환기 풍량": Number,
+    "거실2 급기 풍량": Number,
+    "거실2 환기 풍량": Number,
+    "침실1 급기 풍량": Number,
+    "침실1 환기 풍량": Number,
+    "침실2 급기 풍량": Number,
+    "침실2 환기 풍량": Number,
+    "침실3 급기 풍량": Number,
+    "침실3 환기 풍량": Number
+}
 
-const transmitterSchema = new Schema({
-  "급기풍량": Number,
-  "급기온도": Number,
-  "급기Co2": Number,
-  "배기풍량": Number,
-  "배기온도": Number,
-  "배기Co2": Number
-});
-
-const powermetterSchema = new Schema({
-    "유효전력량": Number,
-    "전압": Number,
-    "전류": Number,
-    "유효전력": Number,
-})
+const SMUSchema = {
+    
+}
 
 const deviceSchema = new Schema({
-  transmitter: transmitterSchema,
-  powermetter: powermetterSchema,
-  Room1: roomSchema,
-  Room2: roomSchema,
-},{ timestamps: true });
+    ...AHUSchema,
+    ...diffuserSchema,
+    ...airVolumeMeterSchema,
+  },{ timestamps: true });
 
 const convertToKST = date => {
     const kstOffset = 9 * 60 * 60 * 1000; // 9 hours in milliseconds

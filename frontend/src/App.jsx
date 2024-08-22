@@ -24,10 +24,11 @@ import io from 'socket.io-client';
 import { updateDeviceData } from './store/thunkFunction'
 
 const brokerAddr = '119.30.150.230'
+const socketAddr = 'http://kict502lab.duckdns.org:4000'
 const brokerPort = 1883
 const subTopic = 'modbus/read'
 
-const socket = io('http://localhost:4000', { // <외부IP>를 실제 외부 IP로 변경
+const socket = io(socketAddr, { // <외부IP>를 실제 외부 IP로 변경
   transports: ['websocket', 'polling'], // 사용할 전송 프로토콜 명시
   withCredentials: true,
 });
@@ -65,7 +66,7 @@ function App() {
 
   useEffect(() => {
     socket.on('kict502Lab', (newData) => {
-      console.log('socketNewData: ',newData);
+      //console.log('socketNewData: ',newData);
       dispatch(updateDeviceData(newData));
     });
 

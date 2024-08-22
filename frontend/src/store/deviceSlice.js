@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { authUser, loginUser, logoutUser, registerUser, generateTestData, requestAllDeviceData, updateDeviceData } from "./thunkFunction";
+import { authUser, loginUser, logoutUser, registerUser, requestAllDeviceData, updateDeviceData } from "./thunkFunction";
 import { toast } from "react-toastify";
 
 const initialState = {
@@ -25,20 +25,6 @@ const deviceSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(generateTestData.pending, (state) => {
-                state.isLoading = true;
-            })
-            .addCase(generateTestData.fulfilled, (state, action) =>{
-                state.isLoading = false;
-                state.graphData = [...state.graphData, action.payload]
-                state.graphData.length > 100 ? state.graphData = [...state.graphData.slice(1)] : null;
-                //toast.info('')
-            })
-            .addCase(generateTestData.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload;
-                toast.error(action.payload);
-            })
             .addCase(updateDeviceData.pending, (state, action) => {
                 state.isLoading = true;
                 //state.deviceAllData = action.payload;
@@ -49,8 +35,8 @@ const deviceSlice = createSlice({
                 state.isLoading = false;
                 state.deviceAllData = JSON.parse(action.payload);
                 //console.log('state.deviceAllData', state.deviceAllData)
-                //state.dashBoardGraphData = [...state.dashBoardGraphData, {x: Date.now(), y: action.payload}]
-                //state.dashBoardGraphData.length > 100 ? state.dashBoardGraphData = [...state.dashBoardGraphData.slice(30)] : null;
+                state.graphData = [...state.graphData, {x: Date.now(), y: JSON.parse(action.payload)}]
+                state.graphData.length > 100 ? state.graphData = [...state.dashBoardGraphData.slice(10)] : null;
             })
             .addCase(updateDeviceData.rejected, (state, action) => {
                 state.isLoading = false;
