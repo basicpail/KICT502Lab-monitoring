@@ -4,6 +4,8 @@ import NavItem from './Sections/NavItem';
 import { toast } from "react-toastify";
 
 const Navbar = () => {
+  const logoImageSrc = `${import.meta.env.VITE_BACKEND_ADDR}/Navbar-logo.png`
+  console.log('logoImageSrc: ', logoImageSrc)
   const [menu, setMenu] = useState(false);
 
   const handleMenu = () =>{
@@ -18,7 +20,7 @@ const Navbar = () => {
 
           {/*logo */}
           <div className='flex items-center text-2xl h-14'>
-            <Link to='/'><img src='http://localhost:4000/Navbar-logo.png' alt="Logo" className="h-12 w-14 mr-2"/></Link>
+            <Link to='/'><img src={logoImageSrc} alt="Logo" className="h-12 w-14 mr-2"/></Link>
           </div>
 
 

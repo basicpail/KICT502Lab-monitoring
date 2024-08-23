@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
 const ModeControl = () => {
   const data = useSelector(state => state.device?.deviceAllData);
@@ -14,7 +15,7 @@ const ModeControl = () => {
     setSelected(index);
 
     try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: 'run_mode', value: index });
+      await axiosInstance.post('/devices/writeModbus', { address: 'run_mode', value: index });
     } catch (error) {
       console.error('Error updating mode:', error);
     }

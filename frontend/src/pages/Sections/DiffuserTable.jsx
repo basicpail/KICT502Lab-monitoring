@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditableValue from './EditableValue';
 import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
 const TableComponent = ({location, data}) => {
   const [sdOpen, setSdOpen] = useState(false);
@@ -29,12 +30,11 @@ const TableComponent = ({location, data}) => {
     console.log('toggleSdLocation: ', location)
     try {
       if (sdOpen === true){
-        await axios.post('http://localhost:4000/devices/writeModbus', { address: `set_sdopen_${location}`, value: sdOpen });
+        await axiosInstance.post('/devices/writeModbus', { address: `set_sdopen_${location}`, value: sdOpen });
       }
       if (sdOpen === false){
-        await axios.post('http://localhost:4000/devices/writeModbus', { address: `set_sdclose_${location}`, value: sdOpen });
+        await axiosInstance.post('/devices/writeModbus', { address: `set_sdclose_${location}`, value: sdOpen });
       }
-      // await axios.post('http://localhost:4000/devices/writeModbus', { address: sdOpen, value: location });
     } catch (error) {
       console.error('Error updating mode:', error);
     }
@@ -46,10 +46,10 @@ const TableComponent = ({location, data}) => {
     console.log('toggleRdLocation: ', location)
     try {
       if (rdOpen === true){
-        await axios.post('http://localhost:4000/devices/writeModbus', { address: `set_rdopen_${location}`, value: rdOpen });
+        await axiosInstance.post('/devices/writeModbus', { address: `set_rdopen_${location}`, value: rdOpen });
       }
       if (rdOpen === false){
-        await axios.post('http://localhost:4000/devices/writeModbus', { address: `set_rdclose_${location}`, value: rdOpen });
+        await axiosInstance.post('/devices/writeModbus', { address: `set_rdclose_${location}`, value: rdOpen });
       }
     } catch (error) {
       console.error('Error updating mode:', error);
@@ -60,7 +60,7 @@ const TableComponent = ({location, data}) => {
     setSettings({ ...settings, [key]: value });
 
     try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: 1, value: value });
+      await axiosInstance.post('/devices/writeModbus', { address: 1, value: value });
     } catch (error) {
       console.error('Error updating mode:', error);
     }

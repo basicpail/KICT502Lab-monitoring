@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
 import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
 const CompressorSettings = () => {
   const data = useSelector(state => state.device?.deviceAllData)
@@ -16,7 +17,7 @@ const CompressorSettings = () => {
     setSettings({ ...settings, [key]: value });
 
     try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: key, value: value });
+      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
     } catch (error) {
       console.error('Error updating mode:', error);
     }

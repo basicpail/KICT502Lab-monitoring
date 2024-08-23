@@ -3,36 +3,62 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
 import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
 const FanControl = () => {
   const data = useSelector(state => state.device?.deviceAllData);
 
   const [fanStatus, setFanStatus] = useState({
-    idf: 'MAN',
-    odf: 'MAN',
-    comp: 'MAN',
-    eev: 'MAN',
+    idf: 'AUTO',
+    odf: 'ATUO',
+    comp: 'AUTO',
+    eev: 'AUTO',
   });
+  const [settings, setSettings] = useState({
+    set_idf_rpm: data['set_idf_rpm'],
+    set_odf_rpm: data['set_odf_rpm'],
+    set_comp_rps: data['set_comp_rps'],
+    set_eev_step: data['set_eev_step'],
+  });
+
+
+  useEffect(() => {
+    setFanStatus(prevState => {
+        const newStatus = prevState;
+        const value = decimalToBitString(parseInt(data['set_fan']))
+        
+        value.split('').forEach((bit, i) => {
+            if (bit === '1') {
+                newStatus[Object.keys(newStatus)[value.length-1-i]] = 'MAN';
+            }
+            else {
+              newStatus[Object.keys(newStatus)[value.length-1-i]] = 'AUTO';
+            }
+        });
+        
+        return newStatus;
+    });
+  }, [data]); // value가 변경될 때마다 useEffect 실행
 
   const toggleFanStatus = async (fan) => {
     setFanStatus({
-      ...fanStatus,
-      [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
-    });
+        ...fanStatus,
+        [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
+      });
 
-    const bitString = convertFanStatusToBitString({
-      ...fanStatus,
-      [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
-    })
+      const bitString = convertFanStatusToBitString({
+        ...fanStatus,
+        [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
+      })
 
-    console.log('FanBitString: ', bitString);
-    try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: 'set_fan', value: bitStringToDecimal(bitString) });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+      console.log('FanBitString: ', bitString);
+      try {
+        await axiosInstance.post('/devices/writeModbus', { address: 'set_fan', value: bitStringToDecimal(bitString) });
+      } catch (error) {
+        console.error('Error updating mode:', error);
+      }
   };
-
+  // 0=자동/1=수동
   const convertFanStatusToBitString = (status) => {
     const keys = [ 'eev', 'comp', 'odf','idf'];
     return keys.map(key => (status[key] === 'MAN' ? '1' : '0')).join('');
@@ -42,28 +68,39 @@ const FanControl = () => {
     return parseInt(bitStr, 2);
   };
 
-  const [manualValues, setManualValues] = useState({
-    indoor: 3,
-    outdoor: 2,
-  });
+  const decimalToBitString = (decimal) => {
+    let bitStr = decimal.toString(2);
+    while (bitStr.length < 4) {
+      bitStr = '0' + bitStr;
+    }
+    return bitStr.split('').join('');
+    //return bitStr.split('').reverse().join('');
+  };
 
-  const [settings, setSettings] = useState({
-    set_idf_rpm: data['set_idf_rpm'],
-    set_odf_rpm: data['set_odf_rpm'],
-    set_comp_rps: data['set_comp_rps'],
-    set_eev_step: data['set_eev_step'],
-  });
+
 
   const handleSave = async (key, value) => {
-    setManualValues({
-      ...manualValues,
-      [key]: value,
-    });
 
-    try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
+    let isMan = false
+    Object.keys(fanStatus).some(k => {
+      console.log('k, key, value: ', k, key, value)
+      if (key.includes(k) && fanStatus[k] == 'MAN') {
+        isMan = true
+        return true //반복중단
+      }
+      else {
+        isMan = false
+        return false
+      }
+    })
+
+    if (isMan) {
+      try {
+        setSettings({ ...settings, [key]: value });
+        await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
+      } catch (error) {
+        console.error('Error updating mode:', error);
+      }
     }
   };
 

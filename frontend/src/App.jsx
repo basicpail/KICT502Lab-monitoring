@@ -14,19 +14,13 @@ import { authUser, requestAllDeviceData } from './store/thunkFunction'
 import ProtectedPage from './pages/ProtectedPage'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import NotAuthRoutes from './components/NotAuthRoutes'
-import SettingPage from './pages/SettingPage'
-import ReportPage from './pages/ReportPage'
 import Dashboard502 from './pages/502DashBoardPage'
 import AHUPage from './pages/AHUPage'
 import IndoorEnvPage from './pages/IndoorEnvPage'
-import mqtt from 'mqtt';
 import io from 'socket.io-client';
 import { updateDeviceData } from './store/thunkFunction'
 
-const brokerAddr = '119.30.150.230'
-const socketAddr = 'http://kict502lab.duckdns.org:4000'
-const brokerPort = 1883
-const subTopic = 'modbus/read'
+const socketAddr = import.meta.env.VITE_SOCKET_ADDR
 
 const socket = io(socketAddr, { // <외부IP>를 실제 외부 IP로 변경
   transports: ['websocket', 'polling'], // 사용할 전송 프로토콜 명시

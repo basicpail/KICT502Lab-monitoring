@@ -12,8 +12,7 @@ const Device = require('../models/Device');
 const { downsampling } = require('../utils/formatting');
 
 
-// const mqttClient = mqtt.connect('mqtt://119.30.150.230:1883'); // MQTT 브로커 주소 설정
-const mqttClient = mqtt.connect('mqtt://kict502lab.duckdns.org:1883'); // MQTT 브로커 주소 설정
+const mqttClient = mqtt.connect(process.env.MQTT_BROKER_ADDR);
 
 mqttClient.on('connect', () => {
     console.log('Connected to MQTT broker');

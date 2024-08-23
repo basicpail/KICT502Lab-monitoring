@@ -5,23 +5,20 @@ const { translate502DeviceData } = require('./formatting');
 const { json } = require('express');
 
 let dataCache = {}; // 주기적인 작업 결과를 저장할 변수
-// const brokerAddr = '119.30.150.230';
-const brokerAddr = 'kict502lab.duckdns.org';
-const brokerPort = 1883
-const subTopic = 'modbus/read'
+const brokerAddr = process.env.MQTT_BROKER_ADDR;
+const subTopic = process.env.MQTT_SUBS_TOPIC;
 
 const setupSocket = (server) => {
   const io = socketIo(server, {
     cors: {
       origin: '*',
-      //origin: 'http://192.168.0.100:5174',
       methods: ['GET', 'POST'],
       allowedHeaders: ['Content-Type'],
       credentials: true,
     },
   });
 
-  const mqttClient = mqtt.connect(`mqtt://${brokerAddr}:${brokerPort}`);
+  const mqttClient = mqtt.connect(brokerAddr);
   
   mqttClient.on('connect', () => {
     console.log('Connected to MQTT Broker');

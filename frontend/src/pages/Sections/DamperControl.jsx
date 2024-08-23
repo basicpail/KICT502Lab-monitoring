@@ -1,13 +1,13 @@
 // DamperControl.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
 import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
 const DamperControl = () => {
   const data = useSelector(state => state.device?.deviceAllData);
-
   const [damperStatus, setDamperStatus] = useState(Array(12).fill('AUTO'));
   const [bitString, setBitString] = useState('000000000000'); // 초기 상태: 모든 댐퍼 자동
   const [settings, setSettings] = useState({
@@ -27,6 +27,26 @@ const DamperControl = () => {
   //const [settings, setSettings] = useState(Array(12).fill(4200));
   // const [bitString, setBitString] = useState('111111111111'); // 초기 상태: 모든 댐퍼 수동
 
+  useEffect(() => {
+    setDamperStatus(prevState => {
+        const newStatus = [...prevState];
+        const value = decimalToBitString(parseInt(data['set_damper']))
+        
+        // value의 각 비트를 검사하여 1인 경우 해당 인덱스의 damperStatus를 'MAN'으로 설정
+        // console.log('setDamperStatus: ', value)
+        value.split('').forEach((bit, i) => {
+            if (bit === '1') {
+                newStatus[i] = 'MAN';
+            }
+            else newStatus[i] = 'AUTO'
+        });
+        
+        return newStatus.reverse();
+    });
+  }, [data]); // value가 변경될 때마다 useEffect 실행
+
+
+  // 자동/수동 선택 (0=자동/1=수동)
   const toggleDamperStatus = async (index) => {
     const newDamperStatus = damperStatus.map((status, i) =>
       i === index ? (status === 'MAN' ? 'AUTO' : 'MAN') : status
@@ -37,7 +57,7 @@ const DamperControl = () => {
     setBitString(newBitString);
 
     try {
-      await axios.post('http://localhost:4000/devices/writeModbus', { address: 'set_damper', value: bitStringToDecimal(newBitString) });
+      await axiosInstance.post('/devices/writeModbus', { address: 'set_damper', value: bitStringToDecimal(newBitString) });
     } catch (error) {
       console.error('Error updating mode:', error);
     }
@@ -51,7 +71,7 @@ const DamperControl = () => {
       setSettings({ ...settings, [key]: value });
 
       try {
-        await axios.post('http://localhost:4000/devices/writeModbus', { address: key, value: value });
+        await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
       } catch (error) {
         console.error('Error updating mode:', error);
       }

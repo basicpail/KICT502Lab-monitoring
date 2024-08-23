@@ -11,6 +11,11 @@ const EditableValue = ({ value, onSave, placeholder }) => {
     setEditing(false);
   };
 
+  const handleCancel = () => {
+    // setInputValue(initialValue); // 입력값을 초기값으로 복원
+    setEditing(false);
+  };
+
   return (
     <div className="relative">
       {editing ? (
@@ -24,6 +29,7 @@ const EditableValue = ({ value, onSave, placeholder }) => {
               placeholder={placeholder}
             />
             <button className="ml-2 btn bg-blue-500 text-white" onClick={handleSave}>Save</button>
+            <button className="ml-2 btn bg-red-500 text-white" onClick={handleCancel}>Cancel</button>
           </div>
         </div>
       ) : (
