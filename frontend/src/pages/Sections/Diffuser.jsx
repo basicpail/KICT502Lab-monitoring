@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const Diffuser = () => {
   const data = useSelector(state => state.device?.deviceAllData)
+  const { handleWriteModbus } = useHandleSave();
   
   const [settings, setSettings] = useState({
     set_diffuser_supply_living1: data['set_diffuser_supply_living1'],
@@ -24,11 +24,7 @@ const Diffuser = () => {
 
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    handleWriteModbus(key, value)
   };
 
   return (
@@ -49,55 +45,55 @@ const Diffuser = () => {
           <tr>
             <td>거실1</td>
             <td >
-              <EditableValue value={settings.set_diffuser_supply_living1} onSave={(value) => handleSave('set_diffuser_supply_living1', value)} />
+              <EditableValue value={data.set_diffuser_supply_living1} onSave={(value) => handleSave('set_diffuser_supply_living1', value)} />
             </td>
             <td >{data.diffuser_supply_living1}</td>
             <td >
-              <EditableValue value={settings.set_diffuser_vent_living1} onSave={(value) => handleSave('set_diffuser_vent_living1', value)} />
+              <EditableValue value={data.set_diffuser_vent_living1} onSave={(value) => handleSave('set_diffuser_vent_living1', value)} />
             </td>
             <td >{data.diffuser_vent_living1}</td>
           </tr>
           <tr>
             <td>거실2</td>
             <td >
-              <EditableValue value={settings.set_diffuser_supply_living2} onSave={(value) => handleSave('set_diffuser_supply_living2', value)} />
+              <EditableValue value={data.set_diffuser_supply_living2} onSave={(value) => handleSave('set_diffuser_supply_living2', value)} />
             </td>
             <td >{data.diffuser_supply_living2}</td>
             <td >
-              <EditableValue value={settings.set_diffuser_vent_living2} onSave={(value) => handleSave('set_diffuser_vent_living2', value)} />
+              <EditableValue value={data.set_diffuser_vent_living2} onSave={(value) => handleSave('set_diffuser_vent_living2', value)} />
             </td>
             <td >{data.diffuser_vent_living2}</td>
           </tr>
           <tr>
             <td>침실1</td>
             <td >
-              <EditableValue value={settings.set_diffuser_supply_bedroom1} onSave={(value) => handleSave('set_diffuser_supply_bedroom1', value)} />
+              <EditableValue value={data.set_diffuser_supply_bedroom1} onSave={(value) => handleSave('set_diffuser_supply_bedroom1', value)} />
             </td>
             <td >{data.diffuser_supply_bedroom1}</td>
             <td >
-              <EditableValue value={settings.set_diffuser_vent_bedroom1} onSave={(value) => handleSave('set_diffuser_vent_bedroom1', value)} />
+              <EditableValue value={data.set_diffuser_vent_bedroom1} onSave={(value) => handleSave('set_diffuser_vent_bedroom1', value)} />
             </td>
             <td >{data.diffuser_vent_bedroom1}</td>
           </tr>
           <tr>
             <td>침실2</td>
             <td >
-              <EditableValue value={settings.set_diffuser_supply_bedroom2} onSave={(value) => handleSave('set_diffuser_supply_bedroom2', value)} />
+              <EditableValue value={data.set_diffuser_supply_bedroom2} onSave={(value) => handleSave('set_diffuser_supply_bedroom2', value)} />
             </td>
             <td >{data.diffuser_supply_bedroom2}</td>
             <td >
-              <EditableValue value={settings.set_diffuser_vent_bedroom2} onSave={(value) => handleSave('set_diffuser_vent_bedroom2', value)} />
+              <EditableValue value={data.set_diffuser_vent_bedroom2} onSave={(value) => handleSave('set_diffuser_vent_bedroom2', value)} />
             </td>
             <td >{data.diffuser_vent_bedroom2}</td>
           </tr>
           <tr>
             <td>침실3</td>
             <td >
-              <EditableValue value={settings.set_diffuser_supply_bedroom3} onSave={(value) => handleSave('set_diffuser_supply_bedroom3', value)} />
+              <EditableValue value={data.set_diffuser_supply_bedroom3} onSave={(value) => handleSave('set_diffuser_supply_bedroom3', value)} />
             </td>
             <td >{data.diffuser_supply_bedroom3}</td>
             <td >
-              <EditableValue value={settings.set_diffuser_vent_bedroom3} onSave={(value) => handleSave('set_diffuser_vent_bedroom3', value)} />
+              <EditableValue value={data.set_diffuser_vent_bedroom3} onSave={(value) => handleSave('set_diffuser_vent_bedroom3', value)} />
             </td>
             <td >{data.diffuser_vent_bedroom3}</td>
           </tr>

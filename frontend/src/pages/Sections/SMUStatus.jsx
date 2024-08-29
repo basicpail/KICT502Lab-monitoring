@@ -2,12 +2,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const SMUStatus = () => {
   const data = useSelector(state => state.device?.deviceAllData);
-
+  const { handleWriteModbus } = useHandleSave();
   const [settings, setSettings] = useState({
     smu_set_mode_living1: data['smu_set_mode_living1'],
     smu_set_position_living1: data['smu_set_position_living1'],
@@ -25,21 +24,12 @@ const SMUStatus = () => {
     smu_set_volume_diff_living2: data['smu_set_volume_diff_living2'],
     smu_set_temp_living2: data['smu_set_temp_living2'],
     smu_set_temp_controltime_living2: data['smu_set_temp_controltime_living2'],
-    smu_rpm_living1: data[''],
-    smu_volume_living1: data[''],
-    smu_temp_in_living1: data[''],
-    smu_temp_supply_living1: data[''],
-    smu_co2_living1: data[''], 
   });
 
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
+    handleWriteModbus(key,value)
 
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
   };
 
   return (
@@ -57,73 +47,73 @@ const SMUStatus = () => {
           <tr>
             <td>디퓨저 모드</td>
             <td >
-              <EditableValue value={settings.smu_set_mode_living1} onSave={(value) => handleSave('smu_set_mode_living1', value)} />
+              <EditableValue value={data.smu_set_mode_living1} onSave={(value) => handleSave('smu_set_mode_living1', value)} />
             </td>
             <td >
-            <EditableValue value={settings.smu_set_mode_living2} onSave={(value) => handleSave('smu_set_mode_living2', value)} />
+            <EditableValue value={data.smu_set_mode_living2} onSave={(value) => handleSave('smu_set_mode_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>디퓨저 목표 개도값</td>
             <td >
-              <EditableValue value={settings.smu_set_position_living1} onSave={(value) => handleSave('smu_set_position_living1', value)} />
+              <EditableValue value={data.smu_set_position_living1} onSave={(value) => handleSave('smu_set_position_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_position_living2} onSave={(value) => handleSave('smu_set_position_living2', value)} />
+              <EditableValue value={data.smu_set_position_living2} onSave={(value) => handleSave('smu_set_position_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>설정 풍량</td>
             <td >
-              <EditableValue value={settings.smu_set_volume_living1} onSave={(value) => handleSave('smu_set_volume_living1', value)} />
+              <EditableValue value={data.smu_set_volume_living1} onSave={(value) => handleSave('smu_set_volume_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_volume_living2} onSave={(value) => handleSave('smu_set_volume_living2', value)} />
+              <EditableValue value={data.smu_set_volume_living2} onSave={(value) => handleSave('smu_set_volume_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>풍량제어 제어시간 간격</td>
             <td >
-              <EditableValue value={settings.smu_set_volume_controltime_living1} onSave={(value) => handleSave('smu_set_volume_controltime_living1', value)} />
+              <EditableValue value={data.smu_set_volume_controltime_living1} onSave={(value) => handleSave('smu_set_volume_controltime_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_volume_controltime_living2} onSave={(value) => handleSave('smu_set_volume_controltime_living2', value)} />
+              <EditableValue value={data.smu_set_volume_controltime_living2} onSave={(value) => handleSave('smu_set_volume_controltime_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>풍량제어 목표도달 판단 기준값 </td>
             <td >
-              <EditableValue value={settings.smu_set_volume_ref_living1} onSave={(value) => handleSave('smu_set_volume_ref_living1', value)} />
+              <EditableValue value={data.smu_set_volume_ref_living1} onSave={(value) => handleSave('smu_set_volume_ref_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_volume_ref_living2} onSave={(value) => handleSave('smu_set_volume_ref_living2', value)} />
+              <EditableValue value={data.smu_set_volume_ref_living2} onSave={(value) => handleSave('smu_set_volume_ref_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>풍량제어 디퓨저 개도 위치 조정값</td>
             <td >
-              <EditableValue value={settings.smu_set_volume_diff_living1} onSave={(value) => handleSave('smu_set_volume_diff_living1', value)} />
+              <EditableValue value={data.smu_set_volume_diff_living1} onSave={(value) => handleSave('smu_set_volume_diff_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_volume_diff_living2} onSave={(value) => handleSave('smu_set_volume_diff_living2', value)} />
+              <EditableValue value={data.smu_set_volume_diff_living2} onSave={(value) => handleSave('smu_set_volume_diff_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>설정 온도</td>
             <td >
-              <EditableValue value={settings.smu_set_temp_living1} onSave={(value) => handleSave('smu_set_temp_living1', value)} />
+              <EditableValue value={data.smu_set_temp_living1} onSave={(value) => handleSave('smu_set_temp_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_temp_living2} onSave={(value) => handleSave('smu_set_temp_living2', value)} />
+              <EditableValue value={data.smu_set_temp_living2} onSave={(value) => handleSave('smu_set_temp_living2', value)} />
             </td>
           </tr>
           <tr>
             <td>온도제어 제어시간 간격</td>
             <td >
-              <EditableValue value={settings.smu_set_temp_controltime_living1} onSave={(value) => handleSave('smu_set_temp_controltime_living1', value)} />
+              <EditableValue value={data.smu_set_temp_controltime_living1} onSave={(value) => handleSave('smu_set_temp_controltime_living1', value)} />
             </td>
             <td >
-              <EditableValue value={settings.smu_set_temp_controltime_living2} onSave={(value) => handleSave('smu_set_temp_controltime_living2', value)} />
+              <EditableValue value={data.smu_set_temp_controltime_living2} onSave={(value) => handleSave('smu_set_temp_controltime_living2', value)} />
             </td>
           </tr>
           <tr>

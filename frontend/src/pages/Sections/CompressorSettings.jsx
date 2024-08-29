@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
+
 
 const CompressorSettings = () => {
   const data = useSelector(state => state.device?.deviceAllData)
+  const { handleWriteModbus } = useHandleSave();
 
   const [settings, setSettings] = useState({
     set_comp_controltime: data['set_comp_controltime'],
@@ -16,11 +17,7 @@ const CompressorSettings = () => {
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
 
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    handleWriteModbus(key, value)
   };
 
   return (
@@ -37,13 +34,13 @@ const CompressorSettings = () => {
           <tr>
             <td>제어주기</td>
             <td >
-              <EditableValue value={settings.set_comp_controltime} onSave={(value) => handleSave('set_comp_controltime', value)} />
+              <EditableValue value={data.set_comp_controltime} onSave={(value) => handleSave('set_comp_controltime', value)} />
             </td>
           </tr>
           <tr>
             <td>제어량</td>
             <td >
-              <EditableValue value={settings.set_comp_changelimit} onSave={(value) => handleSave('set_comp_changelimit', value)} />
+              <EditableValue value={data.set_comp_changelimit} onSave={(value) => handleSave('set_comp_changelimit', value)} />
             </td>
           </tr>
           <tr>

@@ -1,24 +1,18 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const ModeControl = () => {
-  const data = useSelector(state => state.device?.deviceAllData);
-  // console.log('Data Type:', typeof data); // 객체인지 확인
-  // console.log('Full data:', data); // 전체 데이터 출력
-  // console.log('Run Mode Key Exists:', 'run_mode' in data); // 'run_mode' 키 존재 확인
-  const [selected, setSelected] = useState(parseInt(data['run_mode']));
+  // const data = useSelector(state => state.device?.deviceAllData);
+  const selected = parseInt(useSelector(state => state.device?.deviceAllData)['run_mode']);
+  const { handleWriteModbus } = useHandleSave();
+  
+  // const [selected, setSelected] = useState(parseInt(data['run_mode']));
 
   const handleToggle = async (index) => {
     // setSelected(index === selected ? null : index);
-    setSelected(index);
-
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: 'run_mode', value: index });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    // setSelected(index);
+    handleWriteModbus('run_mode', index)
 
   };
 

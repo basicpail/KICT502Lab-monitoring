@@ -1,16 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const fastcsv = require('fast-csv');
 const mqtt = require('mqtt');
 const auth = require('../middleware/auth');
-const { connectModbus, readModbus, writeModbus, performModbusActions } = require('../utils/modbusUtils');
-//const { default: axiosInstance } = require('../../../frontend/src/utils/axios');
 const Device = require('../models/Device');
 const { downsampling } = require('../utils/formatting');
 
+const modbusWritePubTopic = process.env.MODBUS_WRITE_PUB_TOPIC;
+const modbusResponseSubTopic = process.env.MODBUS_RESPONSE_SUB_TOPIC;
+const modbusResponseTimeout = 3000;
 
 const mqttClient = mqtt.connect(process.env.MQTT_BROKER_ADDR);
 
@@ -22,25 +19,65 @@ mqttClient.on('error', (err) => {
     console.error('MQTT Error:', err);
 });
 
+mqttClient.subscribe(modbusResponseSubTopic, (err) => {
+    if (err) {
+        console.error('Failed to subscribe to modbus/response:', err);
+    }
+});
+// 요청 ID와 관련된 응답을 저장할 맵
+const pendingResponses = new Map();
+
+mqttClient.on('message', (topic, message) => {
+    if (topic === modbusResponseSubTopic) {
+        const response = JSON.parse(message.toString());
+        const requestId = response.requestId;
+
+        // 요청 ID에 해당하는 Promise를 찾아서 resolve
+        if (pendingResponses.has(requestId)) {
+            const resolve = pendingResponses.get(requestId);
+            resolve(response);
+            pendingResponses.delete(requestId);
+        }
+    }
+});
+
 
 router.post('/writeModbus', async (req, res, next) => {
     try {
         const body = req.body;
 
         if (body === undefined) {
-            return res.status(400).json({ error: 'Mode is required' });
+            return res.status(400).json({ error: 'args is required' });
         }
-
-        const message = JSON.stringify(body);
+        const requestId = Date.now().toString();
+        const message = JSON.stringify({ ...body, requestId });
+        // const message = JSON.stringify(body);
 
         // MQTT 메시지 발행
-        mqttClient.publish('modbus/write', message, (error) => {
+        mqttClient.publish(modbusWritePubTopic, message, (error) => {
             if (error) {
                 console.error('Failed to publish message:', error);
-                return res.status(500).json({ error: 'Failed to update mode' });
+                return res.status(500).json({ error: 'Failed to update' });
             }
-            res.status(200).json({ status: 'Mode updated successfully' });
+            // res.status(200).json({ status: 'Mode updated successfully' });
         });
+            // MQTT 응답을 기다리는 Promise 생성
+            const responsePromise = new Promise((resolve, reject) => {
+                pendingResponses.set(requestId, resolve);
+
+                // 일정 시간 내에 응답이 오지 않으면 타임아웃
+                setTimeout(() => {
+                    if (pendingResponses.has(requestId)) {
+                        pendingResponses.delete(requestId);
+                        reject(new Error('Response timeout'));
+                    }
+                }, modbusResponseTimeout);
+            });
+
+            const response = await responsePromise;
+            // console.log('postResponse: ',response)
+            res.status(200).json(response);
+
     } catch (error) {
         next(error);
     }

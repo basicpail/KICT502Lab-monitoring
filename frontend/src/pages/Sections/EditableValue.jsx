@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 
-const EditableValue = ({ value, onSave, placeholder }) => {
+const EditableValue = ({ dataKey, value, onSave, placeholder }) => {
+
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value);
 

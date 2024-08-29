@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const EEVSettings = () => {
   const data = useSelector(state => state.device?.deviceAllData)
+  const { handleWriteModbus } = useHandleSave();
 
   const [settings, setSettings] = useState({
     set_eev_startposition_cool: data['set_eev_startposition_cool'],
@@ -26,11 +26,7 @@ const EEVSettings = () => {
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
 
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    handleWriteModbus(key, value)
   };
 
   return (
@@ -48,55 +44,55 @@ const EEVSettings = () => {
           <tr>
             <td>초기개도</td>
             <td >
-              <EditableValue value={settings.set_eev_startposition_cool} onSave={(value) => handleSave('set_eev_startposition_cool', value)} />
+              <EditableValue value={data.set_eev_startposition_cool} onSave={(value) => handleSave('set_eev_startposition_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_startposition_heat} onSave={(value) => handleSave('set_eev_startposition_heat', value)} />
+              <EditableValue value={data.set_eev_startposition_heat} onSave={(value) => handleSave('set_eev_startposition_heat', value)} />
             </td>
           </tr>
           <tr>
             <td>기동보류</td>
             <td >
-              <EditableValue value={settings.set_eev_startholding_cool} onSave={(value) => handleSave('set_eev_startholding_cool', value)} />
+              <EditableValue value={data.set_eev_startholding_cool} onSave={(value) => handleSave('set_eev_startholding_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_startholding_heat} onSave={(value) => handleSave('set_eev_startholding_heat', value)} />
+              <EditableValue value={data.set_eev_startholding_heat} onSave={(value) => handleSave('set_eev_startholding_heat', value)} />
             </td>
           </tr>
           <tr>
             <td>과열도</td>
             <td >
-              <EditableValue value={settings.set_eev_sh_cool} onSave={(value) => handleSave('set_eev_sh_cool', value)} />
+              <EditableValue value={data.set_eev_sh_cool} onSave={(value) => handleSave('set_eev_sh_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_sh_heat} onSave={(value) => handleSave('set_eev_sh_heat', value)} />
+              <EditableValue value={data.set_eev_sh_heat} onSave={(value) => handleSave('set_eev_sh_heat', value)} />
             </td>
           </tr>
           <tr>
             <td>제어주기</td>
             <td >
-              <EditableValue value={settings.set_eev_controltime_cool} onSave={(value) => handleSave('set_eev_controltime_cool', value)} />
+              <EditableValue value={data.set_eev_controltime_cool} onSave={(value) => handleSave('set_eev_controltime_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_controltime_heat} onSave={(value) => handleSave('set_eev_controltime_heat', value)} />
+              <EditableValue value={data.set_eev_controltime_heat} onSave={(value) => handleSave('set_eev_controltime_heat', value)} />
             </td>
           </tr>
           <tr>
             <td>P값</td>
             <td >
-              <EditableValue value={settings.set_eev_p_cool} onSave={(value) => handleSave('set_eev_p_cool', value)} />
+              <EditableValue value={data.set_eev_p_cool} onSave={(value) => handleSave('set_eev_p_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_p_heat} onSave={(value) => handleSave('set_eev_p_heat', value)} />
+              <EditableValue value={data.set_eev_p_heat} onSave={(value) => handleSave('set_eev_p_heat', value)} />
             </td>
           </tr>
           <tr>
             <td>I값</td>
             <td >
-              <EditableValue value={settings.set_eev_i_cool} onSave={(value) => handleSave('set_eev_i_cool', value)} />
+              <EditableValue value={data.set_eev_i_cool} onSave={(value) => handleSave('set_eev_i_cool', value)} />
             </td>
             <td >
-              <EditableValue value={settings.set_eev_i_heat} onSave={(value) => handleSave('set_eev_i_heat', value)} />
+              <EditableValue value={data.set_eev_i_heat} onSave={(value) => handleSave('set_eev_i_heat', value)} />
             </td>
           </tr>
         </tbody>

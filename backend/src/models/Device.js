@@ -94,13 +94,41 @@ const airVolumeMeterSchema = {
 }
 
 const SMUSchema = {
-    
+    "SMU 거실1 모드": Number,
+    "SMU 거실1 목표 개도값": Number,
+    "SMU 거실1 설정 풍량": Number,
+    "SMU 거실1 풍량제어 제어시간 간격": Number,
+    "SMU 거실1 풍량제어 목표도달 판단 기준값": Number,
+    "SMU 거실1 풍량제어 개도 위치 조정값": Number,
+    "SMU 거실1 설정 온도": Number,
+    "SMU 거실1 온도제어 제어시간 간격": Number,
+    "SMU 거실1 현재 개도값": Number,
+    "SMU 거실1 FAN RPM": Number,
+    "SMU 거실1 현재 풍량": Number,
+    "SMU 거실1 실내 온도": Number,
+    "SMU 거실1 공급 대기 온도": Number,
+    "SMU 거실1 CO2 농도": Number,
+    "SMU 거실2 모드": Number,
+    "SMU 거실2 목표 개도값": Number,
+    "SMU 거실2 설정 풍량": Number,
+    "SMU 거실2 풍량제어 제어시간 간격": Number,
+    "SMU 거실2 풍량제어 목표도달 판단 기준값": Number,
+    "SMU 거실2 풍량제어 개도 위치 조정값": Number,
+    "SMU 거실2 설정 온도": Number,
+    "SMU 거실2 온도제어 제어시간 간격": Number,
+    "SMU 거실2 현재 개도값": Number,
+    "SMU 거실2 FAN RPM": Number,
+    "SMU 거실2 현재 풍량": Number,
+    "SMU 거실2 실내 온도": Number,
+    "SMU 거실2 공급 대기 온도": Number,
+    "SMU 거실2 CO2 농도": Number
 }
 
 const deviceSchema = new Schema({
     ...AHUSchema,
     ...diffuserSchema,
     ...airVolumeMeterSchema,
+    ...SMUSchema,
   },{ timestamps: true });
 
 const convertToKST = date => {

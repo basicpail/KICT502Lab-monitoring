@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { authUser, loginUser, logoutUser, registerUser, requestAllDeviceData, updateDeviceData } from "./thunkFunction";
+import { updateDeviceData, editableValueOnSave } from "./thunkFunction";
 import { toast } from "react-toastify";
 
 const initialState = {
@@ -39,6 +39,24 @@ const deviceSlice = createSlice({
                 state.graphData.length > 100 ? state.graphData = [...state.dashBoardGraphData.slice(10)] : null;
             })
             .addCase(updateDeviceData.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(editableValueOnSave.pending, (state, action) => {
+                state.isLoading = true;
+                //state.deviceAllData = action.payload;
+                //state.dashBoardGraphData = [...state.dashBoardGraphData, {x: Date.now(), y: action.payload.deviceDataArray}]
+                //state.dashBoardGraphData.length > 100 ? state.dashBoardGraphData = [...state.dashBoardGraphData.slice(30)] : null;
+            })
+            .addCase(editableValueOnSave.fulfilled, (state, action) =>{
+                state.isLoading = false;
+                console.log('editableValueOnSave action.payload: ',action.payload)
+                state.deviceAllData[action.payload.dataKey] = action.payload.inputValue;
+                // state.deviceAllData = JSON.parse(action.payload);
+                // //console.log('state.deviceAllData', state.deviceAllData)
+                // state.graphData = [...state.graphData, {x: Date.now(), y: JSON.parse(action.payload)}]
+                // state.graphData.length > 100 ? state.graphData = [...state.dashBoardGraphData.slice(10)] : null;
+            })
+            .addCase(editableValueOnSave.rejected, (state, action) => {
                 state.isLoading = false;
             })
     }

@@ -6,7 +6,7 @@ const { json } = require('express');
 
 let dataCache = {}; // 주기적인 작업 결과를 저장할 변수
 const brokerAddr = process.env.MQTT_BROKER_ADDR;
-const subTopic = process.env.MQTT_SUBS_TOPIC;
+const subTopic = process.env.MODBUS_READ_SUB_TOPIC;
 
 const setupSocket = (server) => {
   const io = socketIo(server, {

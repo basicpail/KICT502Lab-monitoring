@@ -8,7 +8,6 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({path:'.env'});
 const port = 4000;
-const { connectModbus, performModbusActions } = require('./utils/modbusUtils');
 const setupSocket = require('./utils/socket');
 
 app.use(express.static(path.join(__dirname, 'uploads' ))); //절대경로를 사용하기 위함임, 실행명령을 입력하는 경로에 따라서 상대적인 경로가 지정되어 버리니까?
@@ -17,11 +16,12 @@ app.use(express.json());
 app.use('/users', require('./routes/users'));
 app.use('/devices', require('./routes/devices'));
 
+// const mongoURI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_ADDR}/${process.env.MONGO_DBNAME}`
+const mongoURI = `mongodb://${process.env.MONGO_ADDR}`
 
-//connectModbus();
 setupSocket(server);
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(mongoURI)
     .then(()=>{
         console.log('DB Connect!');
     })

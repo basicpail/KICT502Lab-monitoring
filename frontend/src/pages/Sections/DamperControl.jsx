@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const DamperControl = () => {
   const data = useSelector(state => state.device?.deviceAllData);
+  const { handleWriteModbus } = useHandleSave();
   const [damperStatus, setDamperStatus] = useState(Array(12).fill('AUTO'));
   const [bitString, setBitString] = useState('000000000000'); // 초기 상태: 모든 댐퍼 자동
   const [settings, setSettings] = useState({
@@ -51,16 +51,12 @@ const DamperControl = () => {
     const newDamperStatus = damperStatus.map((status, i) =>
       i === index ? (status === 'MAN' ? 'AUTO' : 'MAN') : status
     );
-    setDamperStatus(newDamperStatus);
+    //setDamperStatus(newDamperStatus); modbusRead 사이에 damper값이 바뀌면 화면상에서는 값이 변했다가 이전 값으로 돌아왔다가 다시 변한값으로 렌더링 되기 때문에 사용자가 혼란을 느낄 수 있다. 그래서 내가 값을 변경하면 실제로 변경된 값이 modbusread 되어 들어오기 전 까지는 변경하지 않는걸로 수정했다.
     const newBitString = generateBitString(newDamperStatus);
     console.log('DamperBitString: ', newBitString);
     setBitString(newBitString);
+    handleWriteModbus('set_damper',bitStringToDecimal(newBitString))
 
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: 'set_damper', value: bitStringToDecimal(newBitString) });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
   };
 
   const handleSave = async (index, key, value) => {
@@ -70,11 +66,7 @@ const DamperControl = () => {
     if (damperStatus[index] == 'MAN'){
       setSettings({ ...settings, [key]: value });
 
-      try {
-        await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-      } catch (error) {
-        console.error('Error updating mode:', error);
-      }
+      handleWriteModbus(key, value)
     }
   };
 
@@ -122,8 +114,8 @@ const DamperControl = () => {
                     </button>
                   </td>
                   <td>
-                    <EditableValue 
-                      value={settings[`set_damper${index + 1}`]} 
+                    <EditableValue
+                      value={data[`set_damper${index + 1}`]} 
                       onSave={(value) => handleSave(index, `set_damper${index + 1}`, value)} 
                       placeholder={`Enter value for DAMPER-${index + 1}`} 
                     />
@@ -157,8 +149,8 @@ const DamperControl = () => {
                     </button>
                   </td>
                   <td>
-                    <EditableValue 
-                      value={settings[`set_damper${index + 7}`]} 
+                    <EditableValue
+                      value={data[`set_damper${index + 7}`]} 
                       onSave={(value) => handleSave(index,`set_damper${index + 7}`, value)} 
                       placeholder={`Enter value for DAMPER-${index + 7}`} 
                     />

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const TableComponent = ({location, data}) => {
+  const { handleWriteModbus } = useHandleSave();
   const [sdOpen, setSdOpen] = useState(false);
   const [rdOpen, setRdOpen] = useState(false);
   const [filteredData, setFilteredData] = useState({});
@@ -21,19 +21,49 @@ const TableComponent = ({location, data}) => {
     set_diffuser_vent_bedroom3: data['set_diffuser_vent_bedroom3'],
   });
 
+  useEffect(() => {
+    const locationMap = {
+      '거실1': 'living1',
+      '거실2': 'living2',
+      '침실1': 'bedroom1',
+      '침실2': 'bedroom2',
+      '침실3': 'bedroom3'
+    };
+    const formattedLocation = locationMap[location] || location;
+
+    const supplyKey = `diffuser_supply_${formattedLocation}`;
+    const ventKey = `diffuser_vent_${formattedLocation}`;
+
+    // data에서 값을 가져와서 sdOpen과 rdOpen 상태 설정
+    const supplyValue = data[supplyKey] ? parseFloat(data[supplyKey]) : 0;
+    const ventValue = data[ventKey] ? parseFloat(data[ventKey]) : 0;
+
+    // sdOpen과 rdOpen 값 업데이트
+    if (supplyValue > 0) {
+      setSdOpen(false);
+    } else {
+      setSdOpen(true);
+    }
+
+    if (ventValue > 0) {
+      setRdOpen(false);
+    } else {
+      setRdOpen(true);
+    }
+  // }, [location, data]);
+  }, [data]);
+
   //const toggleSd = () => setSdOpen(!sdOpen);
   //const toggleRd = () => setRdOpen(!rdOpen);
 
   const toggleSd = async (location, value) => {
-    setSdOpen(!sdOpen);
-    console.log('toggleSd:',sdOpen)
-    console.log('toggleSdLocation: ', location)
+    // setSdOpen(!sdOpen);
     try {
       if (sdOpen === true){
-        await axiosInstance.post('/devices/writeModbus', { address: `set_sdopen_${location}`, value: sdOpen });
+        handleWriteModbus(`set_sdopen_${location}`, sdOpen)
       }
       if (sdOpen === false){
-        await axiosInstance.post('/devices/writeModbus', { address: `set_sdclose_${location}`, value: sdOpen });
+        handleWriteModbus(`set_sdclose_${location}`, sdOpen)
       }
     } catch (error) {
       console.error('Error updating mode:', error);
@@ -41,15 +71,13 @@ const TableComponent = ({location, data}) => {
   }
 
   const toggleRd = async (location, value) => {
-    setRdOpen(!rdOpen);
-    console.log('toggleRd!')
-    console.log('toggleRdLocation: ', location)
+    // setRdOpen(!rdOpen);
     try {
       if (rdOpen === true){
-        await axiosInstance.post('/devices/writeModbus', { address: `set_rdopen_${location}`, value: rdOpen });
+        handleWriteModbus(`set_rdopen_${location}`, rdOpen)
       }
       if (rdOpen === false){
-        await axiosInstance.post('/devices/writeModbus', { address: `set_rdclose_${location}`, value: rdOpen });
+        handleWriteModbus(`set_rdclose_${location}`, rdOpen)
       }
     } catch (error) {
       console.error('Error updating mode:', error);
@@ -58,12 +86,7 @@ const TableComponent = ({location, data}) => {
 
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
-
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: 1, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    handleWriteModbus(key, value)
   };
 
   useEffect(() => {
@@ -130,7 +153,7 @@ const TableComponent = ({location, data}) => {
             </td>
             <tr>
               <td className ="border border-gray-600 px-4 py-2">
-                <EditableValue  value={settings[`set_diffuser_supply_${locationToEng}`]} onSave={(value) => handleSave(`set_diffuser_supply_${locationToEng}`, value)} />
+                <EditableValue  value={data[`set_diffuser_supply_${locationToEng}`]} onSave={(value) => handleSave(`set_diffuser_supply_${locationToEng}`, value)} />
               </td>
             </tr>
             <tr>
@@ -156,7 +179,7 @@ const TableComponent = ({location, data}) => {
             </td>
             <tr>
               <td className ="border border-gray-600 px-4 py-2">
-                <EditableValue  value={settings[`set_diffuser_vent_${locationToEng}`]} onSave={(value) => handleSave(`set_diffuser_vent_${locationToEng}`, value)} />
+                <EditableValue  value={data[`set_diffuser_vent_${locationToEng}`]} onSave={(value) => handleSave(`set_diffuser_vent_${locationToEng}`, value)} />
               </td>
             </tr>
             <tr>

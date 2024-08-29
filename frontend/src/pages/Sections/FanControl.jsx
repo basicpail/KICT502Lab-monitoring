@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const FanControl = () => {
   const data = useSelector(state => state.device?.deviceAllData);
+  const { handleWriteModbus } = useHandleSave();
 
   const [fanStatus, setFanStatus] = useState({
     idf: 'AUTO',
@@ -41,22 +41,18 @@ const FanControl = () => {
   }, [data]); // value가 변경될 때마다 useEffect 실행
 
   const toggleFanStatus = async (fan) => {
-    setFanStatus({
-        ...fanStatus,
-        [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
-      });
+    // setFanStatus({
+    //     ...fanStatus,
+    //     [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
+    //   });
 
-      const bitString = convertFanStatusToBitString({
-        ...fanStatus,
-        [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
-      })
+    const bitString = convertFanStatusToBitString({
+      ...fanStatus,
+      [fan]: fanStatus[fan] === 'MAN' ? 'AUTO' : 'MAN',
+    })
 
-      console.log('FanBitString: ', bitString);
-      try {
-        await axiosInstance.post('/devices/writeModbus', { address: 'set_fan', value: bitStringToDecimal(bitString) });
-      } catch (error) {
-        console.error('Error updating mode:', error);
-      }
+    console.log('FanBitString: ', bitString);
+    handleWriteModbus('set_fan', bitStringToDecimal(bitString))
   };
   // 0=자동/1=수동
   const convertFanStatusToBitString = (status) => {
@@ -95,12 +91,8 @@ const FanControl = () => {
     })
 
     if (isMan) {
-      try {
-        setSettings({ ...settings, [key]: value });
-        await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-      } catch (error) {
-        console.error('Error updating mode:', error);
-      }
+      setSettings({ ...settings, [key]: value });
+      handleWriteModbus(key, value)
     }
   };
 
@@ -111,7 +103,7 @@ const FanControl = () => {
         <thead>
           <tr>
             <th>구분</th>
-            <th>AUTO</th>
+            <th>자동/수동</th>
             <th>수동</th>
             <th>측정</th>
           </tr>
@@ -128,7 +120,7 @@ const FanControl = () => {
               </button>
             </td>
             <td>
-              <EditableValue value={settings.set_idf_rpm} onSave={(value) => handleSave('set_idf_rpm', value)} />
+              <EditableValue value={data.set_idf_rpm} onSave={(value) => handleSave('set_idf_rpm', value)} />
             </td>
             <td>{data.idf_realrpm}</td>
           </tr>
@@ -143,7 +135,7 @@ const FanControl = () => {
               </button>
             </td>
             <td>
-              <EditableValue value={settings.set_odf_rpm} onSave={(value) => handleSave('set_odf_rpm', value)} />
+              <EditableValue value={data.set_odf_rpm} onSave={(value) => handleSave('set_odf_rpm', value)} />
             </td>
             <td>{data.odf_realrpm}</td>
           </tr>
@@ -158,7 +150,7 @@ const FanControl = () => {
               </button>
             </td>
             <td>
-              <EditableValue value={settings.set_comp_rps} onSave={(value) => handleSave('set_comp_rps', value)} />
+              <EditableValue value={data.set_comp_rps} onSave={(value) => handleSave('set_comp_rps', value)} />
             </td>
             <td>{data.comp_realrps}</td>
           </tr>
@@ -173,7 +165,7 @@ const FanControl = () => {
               </button>
             </td>
             <td>
-              <EditableValue value={settings.set_eev_step} onSave={(value) => handleSave('set_eev_step', value)} />
+              <EditableValue value={data.set_eev_step} onSave={(value) => handleSave('set_eev_step', value)} />
             </td>
             <td>{data.eev_real}</td>
           </tr>

@@ -2,12 +2,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EditableValue from './EditableValue';
-import axios from 'axios';
-import axiosInstance from '../../utils/axios';
+import useHandleSave from '../../hooks/useHandleSave';
 
 const RefrigerantCycleStatus = () => {
   const data = useSelector(state => state.device?.deviceAllData);
-  
+  const { handleWriteModbus } = useHandleSave();
+
   const [settings, setSettings] = useState({
     set_eev_step: data['set_eev_step'],
     set_comp_rps: data['set_comp_rps'],
@@ -17,12 +17,7 @@ const RefrigerantCycleStatus = () => {
 
   const handleSave = async (key, value) => {
     setSettings({ ...settings, [key]: value });
-
-    try {
-      await axiosInstance.post('/devices/writeModbus', { address: key, value: value });
-    } catch (error) {
-      console.error('Error updating mode:', error);
-    }
+    handleWriteModbus(key, value)
   };
 
   return (
@@ -75,7 +70,7 @@ const RefrigerantCycleStatus = () => {
           <tr>
             <td>EEV 목표값</td>
             <td >
-              <EditableValue value={settings.set_eev_step} onSave={(value) => handleSave('set_eev_step', value)} />
+              <EditableValue dataKey = 'set_eev_step' value={data.set_eev_step} onSave={(value) => handleSave('set_eev_step', value)} />
             </td>
           </tr>
           <tr>
@@ -85,7 +80,7 @@ const RefrigerantCycleStatus = () => {
           <tr>
             <td>압축기 목표회전수</td>
             <td >
-              <EditableValue value={data.set_comp_rps} onSave={(value) => handleSave('set_comp_rps', value)} />
+              <EditableValue dataKey = 'set_comp_rps' value={data.set_comp_rps} onSave={(value) => handleSave('set_comp_rps', value)} />
             </td>
           </tr>
           <tr>

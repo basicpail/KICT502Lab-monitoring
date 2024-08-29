@@ -89,3 +89,11 @@ export const updateDeviceData = createAsyncThunk(
       return data;
     }
   );
+
+export const editableValueOnSave = createAsyncThunk(
+    "device/editableValueOnSave",
+    async (data, thunkAPI) => {
+        // console.log('editableValueOnSave: ',data)
+        return data
+    }
+)
